@@ -108,10 +108,9 @@ Users.propTypes = {
       name: PropTypes.string,
       _id: PropTypes.string
     }))
-  }
-  )),
-  onHandleDelete: PropTypes.func,
-  onHandleToggleBookmark: PropTypes.func
+  })).isRequired,
+  onHandleDelete: PropTypes.func.isRequired,
+  onHandleToggleBookmark: PropTypes.func.isRequired
 };
 
 export default Users;
