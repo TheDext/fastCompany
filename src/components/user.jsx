@@ -30,9 +30,9 @@ const User = ({ user, onToggleBookmark, onDelete }) => {
 };
 
 User.propTypes = {
-  user: PropTypes.object,
-  onToggleBookmark: PropTypes.func,
-  onDelete: PropTypes.func
+  user: PropTypes.object.isRequired,
+  onToggleBookmark: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired
 };
 
 export default User;
