@@ -10,8 +10,6 @@ const Users = ({ users, onHandleDelete, onHandleToggleBookmark }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [professions, setProfessions] = useState(api.professions.fetchAll());
   const [selectedProfession, setSelectedProfession] = useState();
-
-  const pageSize = 4;
   
   useEffect(() => {
     api.professions.fetchAll().then((data) => setProfessions(data));
@@ -23,6 +21,8 @@ const Users = ({ users, onHandleDelete, onHandleToggleBookmark }) => {
 
   const handlePageChange = pageIndex => setCurrentPage(pageIndex);
   const handleProfessionSelect = item => setSelectedProfession(item);
+  
+  const pageSize = 4;
 
   const paginate = (items, pageNumber, pageSize) => {
     const startIndex = (pageNumber - 1) * pageSize;
