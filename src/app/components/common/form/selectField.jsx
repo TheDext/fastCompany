@@ -10,7 +10,7 @@ const SelectField = ({
     error,
     name
 }) => {
-    console.log("value", value);
+    // console.log("value", value);
     const handleChange = ({ target }) => {
         onChange({ name: target.name, value: target.value });
     };

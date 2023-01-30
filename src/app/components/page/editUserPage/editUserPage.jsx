@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { validator } from "../../../utils/validator";
-// import api from "../../../api";
 import TextField from "../../common/form/textField";
 import SelectField from "../../common/form/selectField";
 import RadioField from "../../common/form/radioField";
@@ -9,18 +8,15 @@ import MultiSelectField from "../../common/form/multiSelectField";
 import BackHistoryButton from "../../common/backButton";
 import { useProfessions } from "../../../hooks/useProfession";
 import { useQualities } from "../../../hooks/useQualities";
-import { useUser } from "../../../hooks/useUsers";
 import { useAuth } from "../../../hooks/useAuth";
-// import { getUserId } from "../../../services/localStorage.service";
 
 const EditUserPage = () => {
-    const { userId } = useParams();
     const history = useHistory();
+    const { userId } = useParams();
     const { createUser } = useAuth();
-
     const { professions, getProfession } = useProfessions();
     const { qualities, getQuality } = useQualities();
-    const { getUserById } = useUser();
+    const { updateUser } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
     const [data, setData] = useState({
         name: "",
@@ -34,11 +30,11 @@ const EditUserPage = () => {
 
     const getQualitiesId = (qualities) => qualities.map((q) => q.value);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const isValid = validate();
         if (!isValid) return;
-        createUser({
+        await createUser({
             ...data,
             qualities: getQualitiesId(data.qualities)
         });
@@ -49,22 +45,28 @@ const EditUserPage = () => {
         return data.map((qual) => ({ label: qual.name, value: qual._id }));
     };
 
-    useEffect(() => {
-        const userData = getUserById(userId);
-        setIsLoading(true);
+    async function getUserData() {
+        const userData = await updateUser();
+        const userProfession = getProfession(userData.profession)._id;
+        const userQualities = userData.qualities.map((q) => {
+            const qualityObject = getQuality(q);
+            return {
+                value: qualityObject._id,
+                label: qualityObject.name
+            };
+        });
 
-        setData((prevState) => ({
-            ...prevState,
+        return {
             ...userData,
-            qualities: userData.qualities.map((q) => {
-                const qualityObject = getQuality(q);
-                return {
-                    value: qualityObject._id,
-                    label: qualityObject.name
-                };
-            }),
-            profession: getProfession(userData.profession)._id
-        }));
+            qualities: userQualities,
+            profession: userProfession
+        };
+    }
+
+    useEffect(() => {
+        const userData = getUserData();
+        setIsLoading(true);
+        userData.then((data) => setData(data));
     }, []);
 
     useEffect(() => {
