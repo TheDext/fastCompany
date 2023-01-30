@@ -18,6 +18,7 @@ const UserPage = ({ userId }) => {
     async function getUser() {
         try {
             const content = await updateUser();
+            console.log("userPage_getUser_content");
             return content;
         } catch (error) {
             console.log(error);
