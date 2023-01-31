@@ -5,30 +5,14 @@ import QualitiesCard from "../../ui/qualitiesCard";
 import MeetingsCard from "../../ui/meetingsCard";
 import Comments from "../../ui/comments";
 import { CommentsProvider } from "../../../hooks/useComments";
-import { getUserId } from "../../../services/localStorage.service";
 import { useUser } from "../../../hooks/useUsers";
-import { useAuth } from "../../../hooks/useAuth";
 
 const UserPage = ({ userId }) => {
     const [user, setUser] = useState();
-    const { updateUser } = useAuth();
     const { getUserById } = useUser();
-    const loggedUserId = getUserId();
-
-    async function getUser() {
-        try {
-            const content = await updateUser();
-            console.log("userPage_getUser_content");
-            return content;
-        } catch (error) {
-            console.log(error);
-        }
-    }
 
     useEffect(() => {
-        userId === loggedUserId
-            ? getUser().then((data) => setUser(data))
-            : setUser(getUserById(userId));
+        setUser(getUserById(userId));
     }, [userId]);
 
     if (user) {

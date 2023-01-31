@@ -9,15 +9,17 @@ import BackHistoryButton from "../../common/backButton";
 import { useProfessions } from "../../../hooks/useProfession";
 import { useQualities } from "../../../hooks/useQualities";
 import { useAuth } from "../../../hooks/useAuth";
+import { useUser } from "../../../hooks/useUsers";
 
 const EditUserPage = () => {
     const history = useHistory();
     const { userId } = useParams();
-    const { createUser } = useAuth();
-    const { professions, getProfession } = useProfessions();
-    const { qualities, getQuality } = useQualities();
     const { updateUser } = useAuth();
+    const { professions } = useProfessions();
+    const { qualities, getQuality } = useQualities();
+    const { getUserById } = useUser();
     const [isLoading, setIsLoading] = useState(false);
+    const [errors, setErrors] = useState({});
     const [data, setData] = useState({
         name: "",
         email: "",
@@ -26,52 +28,41 @@ const EditUserPage = () => {
         qualities: []
     });
 
-    const [errors, setErrors] = useState({});
+    useEffect(() => {
+        setIsLoading(true);
+        const userData = getUserById(userId);
+        const qualitiesList = userData.qualities.map((q) => getQuality(q));
+
+        setData((prevState) => ({
+            ...prevState,
+            ...userData,
+            qualities: qualitiesList.map((q) => ({
+                value: q._id,
+                label: q.name
+            }))
+        }));
+    }, []);
+
+    useEffect(() => {
+        if (data._id) setIsLoading(false);
+        validate();
+    }, [data]);
 
     const getQualitiesId = (qualities) => qualities.map((q) => q.value);
+    const transformData = (data) => {
+        return data.map((qual) => ({ label: qual.name, value: qual._id }));
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const isValid = validate();
         if (!isValid) return;
-        await createUser({
+        await updateUser({
             ...data,
             qualities: getQualitiesId(data.qualities)
         });
         history.push(`/users/${userId}`);
     };
-
-    const transformData = (data) => {
-        return data.map((qual) => ({ label: qual.name, value: qual._id }));
-    };
-
-    async function getUserData() {
-        const userData = await updateUser();
-        const userProfession = getProfession(userData.profession)._id;
-        const userQualities = userData.qualities.map((q) => {
-            const qualityObject = getQuality(q);
-            return {
-                value: qualityObject._id,
-                label: qualityObject.name
-            };
-        });
-
-        return {
-            ...userData,
-            qualities: userQualities,
-            profession: userProfession
-        };
-    }
-
-    useEffect(() => {
-        const userData = getUserData();
-        setIsLoading(true);
-        userData.then((data) => setData(data));
-    }, []);
-
-    useEffect(() => {
-        if (data._id) setIsLoading(false);
-    }, [data]);
 
     const validatorConfig = {
         email: {
@@ -88,10 +79,6 @@ const EditUserPage = () => {
             }
         }
     };
-
-    useEffect(() => {
-        validate();
-    }, [data]);
 
     const handleChange = (target) => {
         setData((prevState) => ({

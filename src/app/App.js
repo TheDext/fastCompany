@@ -10,13 +10,11 @@ import { QualitiesProvider } from "./hooks/useQualities";
 import AuthProvider from "./hooks/useAuth";
 import ProtectedRoute from "./components/common/protectedRoute";
 import LogOut from "./layouts/logOut";
-// import UserProvider from "./hooks/useUsers";
 
 function App() {
     return (
         <div>
             <AuthProvider>
-                {/* <UserProvider> */}
                     <NavBar />
                     <QualitiesProvider>
                         <ProfessionProvider>
@@ -32,7 +30,6 @@ function App() {
                             </Switch>
                         </ProfessionProvider>
                     </QualitiesProvider>
-                {/* </UserProvider> */}
             </AuthProvider>
             <ToastContainer />
         </div>
