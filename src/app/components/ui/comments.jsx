@@ -1,24 +1,36 @@
 import { orderBy } from "lodash";
-import React from "react";
+import React, { useEffect } from "react";
 import CommentsList, { AddCommentForm } from "../common/comments";
-import { useComments } from "../../hooks/useComments";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import {
+    createComment,
+    getComments,
+    getCommentsLoadingStatus,
+    loadCommentsList,
+    removeComment
+} from "../../store/comments";
+import { getCurrentUserId } from "../../store/users";
 
 const Comments = () => {
-    const { createComment, comments, removeComment } = useComments();
-
-    const handleSubmit = (data) => {
-        createComment(data);
-        // api.comments
-        //     .add({ ...data, pageId: userId })
-        //     .then((data) => setComments([...comments, data]));
+    const dispatch = useDispatch();
+    const { userId: pageId } = useParams();
+    const comments = useSelector(getComments());
+    const userId = useSelector(getCurrentUserId());
+    const isLoading = useSelector(getCommentsLoadingStatus());
+    const handleSubmit = ({ content }) => {
+        dispatch(createComment(content, pageId, userId));
     };
+
     const handleRemoveComment = (id) => {
-        removeComment(id);
-        // api.comments.remove(id).then((id) => {
-        //     setComments(comments.filter((x) => x._id !== id));
-        // });
+        dispatch(removeComment(id));
     };
     const sortedComments = orderBy(comments, ["created_at"], ["desc"]);
+    useEffect(() => {
+        dispatch(loadCommentsList(pageId));
+    }, [pageId]);
+
+    if (isLoading) return "Comments is Loading...";
     return (
         <>
             <div className="card mb-2">

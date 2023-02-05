@@ -7,13 +7,7 @@ import Table from "../common/table";
 import { Link } from "react-router-dom";
 import Profession from "./profession";
 
-const UserTable = ({
-    users,
-    onSort,
-    selectedSort,
-    onToggleBookMark,
-    ...rest
-}) => {
+const UserTable = ({ users, onSort, selectedSort, onToggleBookMark }) => {
     const columns = {
         name: {
             path: "name",

@@ -16,6 +16,7 @@ const commentService = {
                 equalTo: `"${pageId}"`
             }
         });
+        console.log("comment.service.js_getComment_data", data);
         return data;
     },
     removeComment: async (commentId) => {
